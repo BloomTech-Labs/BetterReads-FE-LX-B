@@ -1,26 +1,34 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+
 import { bookSearch } from "../../../api";
 
-import { List, SearchBar } from "../../common";
+import SearchContext, {
+  SearchProvider
+} from "../../../state/context/SearchContext";
+
+import { List, SearchBar, Header } from "../../common";
 import RenderSearchPage from "./RenderSearchPage";
 
 const SearchResultsList = () => {
-  const history = useHistory();
-
-  // const bookQuery = history.location.query;
-  const bookQuery = "harry+potter";
-
   return (
     <>
-      <p>
-        <SearchBar labelId="21" name="theSearch" placeholder="Find your book" />
-      </p>
-      <List
-        getItemsData={() => bookSearch(bookQuery)}
-        LoadingComponent={() => <div>Loading results...</div>}
-        RenderItems={RenderSearchPage}
-      />
+      <Header />
+      <SearchBar labelId="21" name="theSearch" placeholder="Find your book" />
+      <SearchContext.Consumer>
+        {value => {
+          if (value.bookQuery) {
+            return (
+              <List
+                getItemsData={() => bookSearch(value.bookQuery)}
+                LoadingComponent={() => <div>Loading results...</div>}
+                RenderItems={RenderSearchPage}
+              />
+            );
+          } else {
+            return <div>Nothing to search for. Try again.</div>;
+          }
+        }}
+      </SearchContext.Consumer>
     </>
   );
 };
